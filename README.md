@@ -19,11 +19,17 @@ The main scope of this project was to have dirt cheap, wireless, tiny and portab
 1. **Deep sleep mod**.There is a way to make ESP-01 work for months using something called deep sleep mode. When in deep sleep, ESP8266 disables almost all of its functions and reboots after specified period of time. There is one catch: ESP-01 is capable to enter deep sleep, but unable to restart and resume operation. XPD_DCDC MCU pin in not connected to RESET pin. To fix it, you would have to solder thin wire between XPD_DCDC and RESET pin. [There is a good article explaining in details how do to this](https://quadmeup.com/esp8266-esp-01-low-power-mode-run-it-for-months/).
 I also have removed the red power led from the ESP01 board what saved 10mA more.
 
-2. **Wiring** see ![alt text](https://github.com/ialex87/Portable-temperature-sensor/blob/master/extras/wiring.png)
+2. **Wiring** see the image below:
+![alt text](https://github.com/ialex87/Portable-temperature-sensor/blob/master/extras/wiring.png)
+
 3. Upload the sketch
 
 
 ### Restults
+Power consumption:
+Active: **133.2mA** 
+Idle: **18.6uA**
+
 ![alt text](https://github.com/ialex87/Portable-temperature-sensor/blob/master/extras/graphana_screenshot.png)
 ![alt text](https://github.com/ialex87/Portable-temperature-sensor/blob/master/extras/IMG1.jpg)
 ![alt text](https://github.com/ialex87/Portable-temperature-sensor/blob/master/extras/IMG2.jpg)
