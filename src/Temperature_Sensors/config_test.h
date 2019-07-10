@@ -13,4 +13,5 @@ const char* mqttServer = "mqtt.lan";
 const int mqttPort = 1883;
 const char* mqttUser = "user";
 const char* mqttPassword = "password";
-const char* in_topic = "/my/topic";
+const char* in_topic = "/sensor/topic/temp";
+const char* in_topic_vcc = "/sensor/topic/vcc";

@@ -1,8 +1,11 @@
 #include <OneWire.h>
-#include <DallasTemperature.h>
+#include <DallasTemperature.h> // DataSheet https://cdn-shop.adafruit.com/datasheets/DS18B20.pdf
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h> // starndard lib location
 #include "config_test.h" //local config file
+
+ADC_MODE(ADC_VCC);
+
 
 WiFiClient espClient;
 PubSubClient client(espClient);
@@ -23,6 +26,7 @@ void setup(void)
   mqtt_connect(); // connect to mqtt
   
   DS18B20.begin();   // Start up the library
+  DS18B20.setResolution(12); //Set the resolution
 
   // report parasite power requirements
   Serial.print("Parasite power is: ");
@@ -43,8 +47,11 @@ void loop(void)
   Serial.print("Temp: ");
   Serial.println(String(tempC).c_str());
   client.publish(in_topic,  String(tempC).c_str(), true);
+  delay(1000);
+  client.publish(in_topic_vcc,  String(vcc_status()).c_str(), true);
   client.disconnect(); // doing the proper disconnect 
-  
+
+  Serial.println(vcc_status());
   Serial.println("zzz");
   delay(2000);
   ESP.deepSleep(SLEEP_TIME * 1000000); // go to sleep  1,000,000 = 1 second
@@ -70,6 +77,10 @@ void setup_wifi() {
   Serial.println(WiFi.localIP());
 }
 
+float vcc_status() {
+  float vccVolt = ((float)ESP.getVcc())/1024;
+  return vccVolt;
+  }
 
 void mqtt_connect() {
   client.setServer(mqttServer, mqttPort);
