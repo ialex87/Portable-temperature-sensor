@@ -16,6 +16,8 @@ OneWire oneWire(ONE_WIRE_BUS);
 // Pass our oneWire reference to Dallas Temperature.
 DallasTemperature DS18B20(&oneWire);
 
+
+
 /****************** SETUP ********************/
 void setup(void)
 {
@@ -24,7 +26,7 @@ void setup(void)
 
   setup_wifi(); // setup wifi connection
   mqtt_connect(); // connect to mqtt
-  
+
   DS18B20.begin();   // Start up the library
   DS18B20.setResolution(12); //Set the resolution
 
@@ -32,14 +34,9 @@ void setup(void)
   Serial.print("Parasite power is: ");
   if (DS18B20.isParasitePowerMode()) Serial.println("ON");
   else Serial.println("OFF");
-      
+
   delay(2000);
-}
 
-
-/******************* LOOP *********************/
-void loop(void)
-{
   DS18B20.requestTemperatures(); // Send the command to get temperatures
   delay(1000);
 
@@ -52,12 +49,22 @@ void loop(void)
   client.disconnect(); // doing the proper disconnect 
 
   Serial.println(vcc_status());
-  Serial.println("zzz");
-  delay(2000);
-  ESP.deepSleep(SLEEP_TIME * 1000000); // go to sleep  1,000,000 = 1 second
 
+  sleep();
+}
+
+
+/******************* LOOP *********************/
+void loop(void)
+{
 }
 /**********************************************/
+
+void sleep() {
+  Serial.println("Going to sleep...");
+  delay(2000);
+  ESP.deepSleep(SLEEP_TIME * 1000000); // go to sleep  1,000,000 = 1 second
+}
 
 void setup_wifi() {
   // Connecting to wifi network
@@ -66,11 +73,16 @@ void setup_wifi() {
 
   WiFi.hostname(HOSTNAME);
   WiFi.begin(wifi_ssid, wifi_password);
-
   while (WiFi.status() != WL_CONNECTED) {
     delay(1000);
     Serial.print(".");
-  }
+    Serial.println(WIFI_TIMEOUT);
+    WIFI_TIMEOUT --;
+    if (WIFI_TIMEOUT == 0) {
+        Serial.println("Wifi connection timeout");
+        sleep();
+      }
+    }
   Serial.println("");
   Serial.println("WiFi connected");
   Serial.println("IP address: ");
@@ -91,8 +103,13 @@ void mqtt_connect() {
       } 
     else {
       Serial.print("failed with state ");
-      Serial.print(client.state());
+      Serial.println(client.state());
       delay(1000);
     }
-  }
-}
+    MQTT_TIMEOUT --;
+    if (MQTT_TIMEOUT == 0) {
+        Serial.println("MQTT connection timeout");
+        sleep();
+     }
+    }
+   }
